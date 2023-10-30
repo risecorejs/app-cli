@@ -21,7 +21,7 @@ module.exports = {
     const moduleExists = await checkModuleExists(modulePath)
 
     if (moduleExists) {
-      const templatePath = path.join(__dirname, '..', '..', 'templates', 'controller.ejs')
+      const templatePath = path.join(__dirname, '..', '..', 'templates', 'service.ejs')
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
