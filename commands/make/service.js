@@ -6,12 +6,12 @@ const ejs = require('ejs')
 const { checkModuleExists } = require('../../utils')
 
 module.exports = {
-  command: 'make:service.ejs',
-  describe: 'Create a service.ejs in a module',
+  command: 'make:service',
+  describe: 'Create a service in a module',
   builder(yargs) {
     yargs.option('module', { alias: 'n', describe: 'Module name', demandOption: true })
 
-    yargs.example([['$0 make:service.ejs --module users ']])
+    yargs.example([['$0 make:service --module users ']])
 
     return yargs
   },

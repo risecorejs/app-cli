@@ -21,7 +21,8 @@ module.exports = (sequelizeInstance) => {
       //   type: DataTypes.INTEGER,
       //   defaultValue: 0
       // }
-    }, {
+    },
+    {
       sequelize: sequelizeInstance,
       autoMigrations: true,
       tableTable: 'your_table_name', // Specify the table name for your model
