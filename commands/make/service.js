@@ -9,7 +9,7 @@ module.exports = {
   command: 'make:service',
   describe: 'Create a service in a module',
   builder(yargs) {
-    yargs.option('module', { alias: 'n', describe: 'Module name', demandOption: true })
+    yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
     yargs.example([['$0 make:service --module users ']])
 

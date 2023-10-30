@@ -9,8 +9,8 @@ module.exports = {
   command: 'make:model',
   describe: 'Create a model in a module',
   builder(yargs) {
-    yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true })
-    yargs.option('name', { alias: 'm', describe: 'Model name', demandOption: true })
+    yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
+    yargs.option('name', { alias: 'n', describe: 'Model name', demandOption: true, type: 'string' })
 
     yargs.example([['$0 make:model --module users --name User']])
 

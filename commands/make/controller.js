@@ -10,7 +10,7 @@ module.exports = {
   command: 'make:controller',
   describe: 'Create a controller in a module',
   builder(yargs) {
-    yargs.option('module', { alias: 'n', describe: 'Module name', demandOption: true })
+    yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
     yargs.example([['$0 make:controller --module users ']])
 
