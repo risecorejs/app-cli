@@ -1,0 +1,33 @@
+const { Model, DataTypes } = require('sequelize')
+
+module.exports = (sequelizeInstance) => {
+  class <%= modelName %> extends Model {
+    static relations(models) {
+      // Define relationships with other models here
+      // Example:
+      // this.belongsTo(models.AnotherModel, { foreignKey: 'anotherModelId' })
+    }
+  }
+
+  <%= modelName %>.init(
+    {
+      // Define your model attributes here
+      // Example:
+      // name: {
+      //   type: DataTypes.STRING,
+      //   allowNull: false
+      // },
+      // age: {
+      //   type: DataTypes.INTEGER,
+      //   defaultValue: 0
+      // }
+    }, {
+      sequelize: sequelizeInstance,
+      autoMigrations: true,
+      tableTable: 'your_table_name', // Specify the table name for your model
+      // paranoid: true
+    }
+  )
+
+  return <%= modelName %>
+}

@@ -1,7 +1,10 @@
 const path = require('path')
 const fs = require('fs/promises')
-const chalk = require('chalk')
+const ejs = require('ejs')
 const _ = require('lodash')
+const chalk = require('chalk')
+
+const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'make:controller',
@@ -16,38 +19,21 @@ module.exports = {
   async handler({ module: moduleName }) {
     const modulePath = path.resolve('modules', moduleName)
 
-    try {
-      await fs.access(modulePath)
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        console.error(chalk.red('✖ Module not found, first create a module!'))
+    const moduleExists = await checkModuleExists(modulePath)
 
-        return
-      } else {
-        throw err
-      }
+    if (moduleExists) {
+      const templatePath = path.join(__dirname, '..', '..', 'templates', 'controller.ejs')
+
+      const template = await fs.readFile(templatePath, 'utf-8')
+
+      await fs.writeFile(
+        path.join(modulePath, `${moduleName}.controller.js`),
+        ejs.render(template, { basePath: _.kebabCase(moduleName) })
+      )
+
+      console.log(
+        chalk.green(`✔ Controller "${moduleName}.controller.js" created in module "${moduleName}" successfully!`)
+      )
     }
-
-    await fs.writeFile(
-      path.join(modulePath, `${moduleName}.controller.js`),
-      [
-        "const express = require('express')",
-        '',
-        'const router = express.Router()',
-        '',
-        `module.exports = ['/${_.kebabCase(moduleName)}', router]`,
-        '',
-        '// Define routes and controller logic using the service.',
-        '// Example:',
-        "// router.get('/', async (req, res) => {",
-        '//   // Call service methods to handle the request and response.',
-        '// })',
-        ''
-      ].join('\n')
-    )
-
-    console.log(
-      chalk.green(`✔ Controller "${moduleName}.controller.js" created in module "${moduleName}" successfully!`)
-    )
   }
 }

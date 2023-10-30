@@ -4,23 +4,27 @@ const chalk = require('chalk')
 
 const makeServiceCommand = require('./service')
 const makeControllerCommand = require('./controller')
+const makeModelCommand = require('./model')
 
 module.exports = {
   command: 'make:module',
   describe: 'Create a new module',
   builder(yargs) {
     yargs.option('name', { alias: 'n', describe: 'Module name', demandOption: true, type: 'string' })
-    yargs.option('service', { alias: 's', describe: 'Generate a service', type: 'boolean' })
+    yargs.option('service', { alias: 's', describe: 'Generate a service.ejs', type: 'boolean' })
     yargs.option('controller', { alias: 'c', describe: 'Generate a controller', type: 'boolean' })
     yargs.option('model', { alias: 'm', describe: 'Generate a model', type: 'string' })
 
-    yargs.example([['$0 make:module --name auth'], ['$0 make:module --name users --service --controller --model User']])
+    yargs.example([
+      ['$0 make:module --name auth'],
+      ['$0 make:module --name users --service.ejs --controller --model User']
+    ])
 
     return yargs
   },
-  async handler({ name, service, controller, model }) {
+  async handler({ name: moduleName, service, controller, model }) {
     const modulesPath = path.resolve('modules')
-    const modulePath = path.join(modulesPath, name)
+    const modulePath = path.join(modulesPath, moduleName)
 
     try {
       await fs.access(modulesPath)
@@ -35,7 +39,7 @@ module.exports = {
     try {
       await fs.access(modulePath)
 
-      console.error(chalk.red(`✖ Module "${name}" already exists!`))
+      console.error(chalk.red(`✖ Module "${moduleName}" already exists!`))
 
       return
     } catch (err) {
@@ -46,14 +50,18 @@ module.exports = {
 
     await fs.mkdir(modulePath)
 
-    console.log(chalk.green(`✔ Module "${name}" created successfully!`))
+    console.log(chalk.green(`✔ Module "${moduleName}" created successfully!`))
 
     if (service) {
-      await makeServiceCommand.handler({ module: name })
+      await makeServiceCommand.handler({ module: moduleName })
     }
 
     if (controller) {
-      await makeControllerCommand.handler({ module: name })
+      await makeControllerCommand.handler({ module: moduleName })
+    }
+
+    if (model) {
+      await makeModelCommand.handler({ module: moduleName, name: model })
     }
   }
 }

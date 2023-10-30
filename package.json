@@ -18,6 +18,7 @@
   "homepage": "https://github.com/risecorejs/app-cli#readme",
   "dependencies": {
     "chalk": "4.1.2",
+    "ejs": "^3.1.9",
     "lodash": "^4.17.21",
     "yargs": "^17.7.2"
   },
