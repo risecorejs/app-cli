@@ -11,7 +11,7 @@ module.exports = {
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
-    yargs.example([['$0 make:service --module users ']])
+    yargs.example([['$0 make:service --module users']])
 
     return yargs
   },
@@ -21,12 +21,13 @@ module.exports = {
     const moduleExists = await checkModuleExists(modulePath, moduleName)
 
     if (moduleExists) {
-      const servicePath = path.join(modulePath, `${moduleName}.service.js`)
+      const serviceFilename = `${moduleName}.service.js`
+      const servicePath = path.join(modulePath, serviceFilename)
 
       try {
         await fs.access(servicePath)
 
-        console.error(chalk.red(`✖ Service "${moduleName}.service.js" already exists in module "${moduleName}"`))
+        console.error(chalk.red(`✖ Service "${serviceFilename}" already exists in module "${moduleName}"`))
 
         return
       } catch (err) {
@@ -39,9 +40,11 @@ module.exports = {
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
-      await fs.writeFile(servicePath, ejs.render(template, { moduleName }))
+      const serviceFileContent = ejs.render(template, { moduleName })
 
-      console.log(chalk.green(`✔ Service "${moduleName}.service.js" created in module "${moduleName}" successfully!`))
+      await fs.writeFile(servicePath, serviceFileContent)
+
+      console.log(chalk.green(`✔ Service "${serviceFilename}" created in module "${moduleName}" successfully!`))
     }
   }
 }

@@ -15,7 +15,11 @@ module.exports = {
     yargs.option('controller', { alias: 'c', describe: 'Generate a controller', type: 'boolean' })
     yargs.option('model', { alias: 'm', describe: 'Generate a model', type: 'string' })
 
-    yargs.example([['$0 make:module --name auth'], ['$0 make:module --name users --service --controller --model User']])
+    yargs.example([
+      ['$0 make:module --name auth'],
+      ['$0 make:module --name auth'],
+      ['$0 make:module --name users --service --controller --model User']
+    ])
 
     return yargs
   },
@@ -50,15 +54,22 @@ module.exports = {
     console.log(chalk.green(`✔ Module "${moduleName}" created successfully!`))
 
     if (service) {
-      await makeServiceCommand.handler({ module: moduleName })
+      await makeServiceCommand.handler({
+        module: moduleName
+      })
     }
 
     if (controller) {
-      await makeControllerCommand.handler({ module: moduleName })
+      await makeControllerCommand.handler({
+        module: moduleName
+      })
     }
 
     if (model) {
-      await makeModelCommand.handler({ module: moduleName, name: model })
+      await makeModelCommand.handler({
+        module: moduleName,
+        name: model
+      })
     }
   }
 }

@@ -12,7 +12,7 @@ module.exports = {
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
-    yargs.example([['$0 make:controller --module users ']])
+    yargs.example([['$0 make:controller --module users']])
 
     return yargs
   },
@@ -22,12 +22,13 @@ module.exports = {
     const moduleExists = await checkModuleExists(modulePath, moduleName)
 
     if (moduleExists) {
-      const controllerPath = path.join(modulePath, `${moduleName}.controller.js`)
+      const controllerFilename = `${moduleName}.controller.js`
+      const controllerPath = path.join(modulePath, controllerFilename)
 
       try {
         await fs.access(controllerPath)
 
-        console.error(chalk.red(`✖ Controller "${moduleName}.controller.js" already exists in module "${moduleName}"`))
+        console.error(chalk.red(`✖ Controller "${controllerFilename}" already exists in module "${moduleName}"`))
 
         return
       } catch (err) {
@@ -40,11 +41,11 @@ module.exports = {
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
-      await fs.writeFile(controllerPath, ejs.render(template, { basePath: _.kebabCase(moduleName) }))
+      const controllerFileContent = ejs.render(template, { basePath: _.kebabCase(moduleName) })
 
-      console.log(
-        chalk.green(`✔ Controller "${moduleName}.controller.js" created in module "${moduleName}" successfully!`)
-      )
+      await fs.writeFile(controllerPath, controllerFileContent)
+
+      console.log(chalk.green(`✔ Controller "${controllerFilename}" created in module "${moduleName}" successfully!`))
     }
   }
 }
