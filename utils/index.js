@@ -7,8 +7,10 @@ module.exports = {
 
 /**
  * Check module exists
+ *
  * @param modulePath {string}
  * @param moduleName {string}
+ *
  * @returns {Promise<boolean>}
  */
 async function checkModuleExists(modulePath, moduleName) {
