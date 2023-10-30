@@ -1,0 +1,28 @@
+{
+  "name": "@risecorejs/app-cli",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "bin": {
+    "rcjs": "./bin/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/risecorejs/app-cli.git"
+  },
+  "author": "Risecorejs <risecorejs@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/risecorejs/app-cli/issues"
+  },
+  "homepage": "https://github.com/risecorejs/app-cli#readme",
+  "dependencies": {
+    "chalk": "4.1.2",
+    "lodash": "^4.17.21",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.29",
+    "prettier": "^3.0.3"
+  }
+}
