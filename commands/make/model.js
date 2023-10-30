@@ -19,7 +19,7 @@ module.exports = {
   async handler({ module: moduleName, name: modelName }) {
     const modulePath = path.resolve('modules', moduleName)
 
-    const moduleExists = await checkModuleExists(modulePath)
+    const moduleExists = await checkModuleExists(modulePath, moduleName)
 
     if (moduleExists) {
       const modelsPath = path.join(modulePath, 'models')

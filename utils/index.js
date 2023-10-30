@@ -8,14 +8,15 @@ module.exports = {
 /**
  * Check module exists
  * @param modulePath {string}
+ * @param moduleName {string}
  * @returns {Promise<boolean>}
  */
-async function checkModuleExists(modulePath) {
+async function checkModuleExists(modulePath, moduleName) {
   try {
     await fs.access(modulePath)
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(chalk.red('✖ Module not found, first create a module!'))
+      console.error(chalk.red(`✖ Module "${moduleName}" not found, first create a module!`))
 
       return false
     } else {
