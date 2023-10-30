@@ -24,6 +24,20 @@ module.exports = {
     if (moduleExists) {
       const modelsPath = path.join(modulePath, 'models')
 
+      const modelPath = path.join(modelsPath, `${modelName}.js`)
+
+      try {
+        await fs.access(modelPath)
+
+        console.error(chalk.red(`✖ Model "${modelName}.js" already exists in module "${moduleName}"`))
+
+        return
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          throw err
+        }
+      }
+
       try {
         await fs.access(modelsPath)
       } catch (err) {
@@ -38,7 +52,7 @@ module.exports = {
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
-      await fs.writeFile(path.join(modelsPath, `${modelName}.js`), ejs.render(template, { modelName }))
+      await fs.writeFile(modelPath, ejs.render(template, { modelName }))
 
       console.log(chalk.green(`✔ Model "${modelName}.js" created in module "${moduleName}" successfully!`))
     }

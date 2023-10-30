@@ -21,11 +21,25 @@ module.exports = {
     const moduleExists = await checkModuleExists(modulePath)
 
     if (moduleExists) {
+      const servicePath = path.join(modulePath, `${moduleName}.service.js`)
+
+      try {
+        await fs.access(servicePath)
+
+        console.error(chalk.red(`✖ Service "${moduleName}.service.js" already exists in module "${moduleName}"`))
+
+        return
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          throw err
+        }
+      }
+
       const templatePath = path.join(__dirname, '..', '..', 'templates', 'service.ejs')
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
-      await fs.writeFile(path.join(modulePath, `${moduleName}.service.js`), ejs.render(template, { moduleName }))
+      await fs.writeFile(servicePath, ejs.render(template, { moduleName }))
 
       console.log(chalk.green(`✔ Service "${moduleName}.service.js" created in module "${moduleName}" successfully!`))
     }
