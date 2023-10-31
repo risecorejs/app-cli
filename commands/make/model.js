@@ -1,16 +1,16 @@
 const path = require('path')
 const fs = require('fs/promises')
-const ejs = require('ejs')
 const chalk = require('chalk')
+const ejs = require('ejs')
 
 const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'make:model [name]',
-  describe: 'Create a model in a module',
+  describe: 'Generate a model in a module',
   builder(yargs) {
-    yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
     yargs.option('name', { alias: 'n', describe: 'Model name', demandOption: true, type: 'string' })
+    yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
     yargs.example([['$0 make:model User --module users'], ['$0 make:model --name User --module users']])
 
@@ -29,7 +29,7 @@ module.exports = {
       try {
         await fs.access(modelPath)
 
-        console.error(chalk.red(`✖ Model "${modelFilename}" already exists in module "${moduleName}"`))
+        console.error(`${chalk.red(`✖`)} Model "${modelFilename}" already exists in module "${moduleName}"!`)
 
         return
       } catch (err) {
@@ -52,11 +52,11 @@ module.exports = {
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
-      const modelFileContent = ejs.render(template, { modelName })
+      const renderedTemplate = ejs.render(template, { modelName })
 
-      await fs.writeFile(modelPath, modelFileContent)
+      await fs.writeFile(modelPath, renderedTemplate)
 
-      console.log(chalk.green(`✔ Model "${modelFilename}" created in module "${moduleName}" successfully!`))
+      console.log(`${chalk.green(`✔`)} Model "${modelFilename}" created in module "${moduleName}" successfully!`)
     }
   }
 }
