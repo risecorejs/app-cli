@@ -23,10 +23,10 @@ module.exports = {
 
     if (moduleExists) {
       const controllerFilename = `${moduleName}.controller.js`
-      const controllerPath = path.join(modulePath, controllerFilename)
+      const controllerFilepath = path.join(modulePath, controllerFilename)
 
       try {
-        await fs.access(controllerPath)
+        await fs.access(controllerFilepath)
 
         console.error(`${chalk.red('✖')} Controller "${controllerFilename}" already exists in module "${moduleName}"!`)
 
@@ -43,7 +43,7 @@ module.exports = {
 
       const renderedTemplate = ejs.render(template, { basePath: _.kebabCase(moduleName) })
 
-      await fs.writeFile(controllerPath, renderedTemplate)
+      await fs.writeFile(controllerFilepath, renderedTemplate)
 
       console.log(
         `${chalk.green('✔')} Controller "${controllerFilename}" created in module "${moduleName}" successfully!`

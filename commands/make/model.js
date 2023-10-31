@@ -24,10 +24,10 @@ module.exports = {
     if (moduleExists) {
       const modelsPath = path.join(modulePath, 'models')
       const modelFilename = `${modelName}.js`
-      const modelPath = path.join(modelsPath, modelFilename)
+      const modelFilepath = path.join(modelsPath, modelFilename)
 
       try {
-        await fs.access(modelPath)
+        await fs.access(modelFilepath)
 
         console.error(`${chalk.red('✖')} Model "${modelFilename}" already exists in module "${moduleName}"!`)
 
@@ -54,7 +54,7 @@ module.exports = {
 
       const renderedTemplate = ejs.render(template, { modelName })
 
-      await fs.writeFile(modelPath, renderedTemplate)
+      await fs.writeFile(modelFilepath, renderedTemplate)
 
       console.log(`${chalk.green('✔')} Model "${modelFilename}" created in module "${moduleName}" successfully!`)
     }

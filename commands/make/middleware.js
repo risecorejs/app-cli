@@ -22,17 +22,28 @@ module.exports = {
     const moduleExists = await checkModuleExists(modulePath, moduleName)
 
     if (moduleExists) {
+      const middlewarePath = path.join(modulePath, 'middleware')
       const middlewareFilename = `${middlewareName}.middleware.js`
-      const middlewarePath = path.join(modulePath, middlewareFilename)
+      const middlewareFilepath = path.join(middlewarePath, middlewareFilename)
 
       try {
-        await fs.access(middlewarePath)
+        await fs.access(middlewareFilepath)
 
-        console.error(`${chalk.red('✖')} Middleware "${middlewareFilename}" already exists in module "${moduleName}"!`)
+        console.error(`${chalk.red('✖')} Middleware "${middlewareFilepath}" already exists in module "${moduleName}"!`)
 
         return
       } catch (err) {
         if (err.code !== 'ENOENT') {
+          throw err
+        }
+      }
+
+      try {
+        await fs.access(middlewarePath)
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          await fs.mkdir(middlewarePath)
+        } else {
           throw err
         }
       }
@@ -43,7 +54,7 @@ module.exports = {
 
       const renderedTemplate = ejs.render(template)
 
-      await fs.writeFile(middlewarePath, renderedTemplate)
+      await fs.writeFile(middlewareFilepath, renderedTemplate)
 
       console.log(
         `${chalk.green('✔')} Middleware "${middlewareFilename}" created in module "${moduleName}" successfully!`

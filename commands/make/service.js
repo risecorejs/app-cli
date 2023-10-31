@@ -22,10 +22,10 @@ module.exports = {
 
     if (moduleExists) {
       const serviceFilename = `${moduleName}.service.js`
-      const servicePath = path.join(modulePath, serviceFilename)
+      const serviceFilepath = path.join(modulePath, serviceFilename)
 
       try {
-        await fs.access(servicePath)
+        await fs.access(serviceFilepath)
 
         console.error(`${chalk.red('✖')} Service "${serviceFilename}" already exists in module "${moduleName}"!`)
 
@@ -42,7 +42,7 @@ module.exports = {
 
       const renderedTemplate = ejs.render(template, { moduleName })
 
-      await fs.writeFile(servicePath, renderedTemplate)
+      await fs.writeFile(serviceFilepath, renderedTemplate)
 
       console.log(`${chalk.green('✔')} Service "${serviceFilename}" created in module "${moduleName}" successfully!`)
     }
