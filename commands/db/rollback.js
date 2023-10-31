@@ -33,7 +33,7 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName, file: migrationFile }) {
-    await sequelize.sync()
+    await Migration.sync()
 
     const where = {}
 
