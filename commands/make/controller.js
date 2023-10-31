@@ -8,7 +8,7 @@ const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'make:controller',
-  describe: 'Generating a controller in a module',
+  describe: 'Generate a controller in a module',
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
