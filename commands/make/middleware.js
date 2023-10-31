@@ -3,7 +3,7 @@ const fs = require('fs/promises')
 const chalk = require('chalk')
 const ejs = require('ejs')
 
-const { checkModuleExists } = require('../../utils')
+const { checkModuleExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:middleware [name]',

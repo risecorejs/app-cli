@@ -4,7 +4,7 @@
   "description": "",
   "keywords": [],
   "bin": {
-    "rcjs": "./bin/cli.js"
+    "rcjs": "bin/cli"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "ejs": "^3.1.9",
     "fs-extra": "^11.1.1",
     "lodash": "^4.17.21",
+    "ora": "^4.1.1",
     "pg": "^8.11.3",
     "sequelize": "^6.33.0",
     "unzipper": "^0.10.14",

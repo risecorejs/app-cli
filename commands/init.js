@@ -1,10 +1,10 @@
 const axios = require('axios')
+const ora = require('ora')
 const fsPromises = require('fs/promises')
 const path = require('path')
 const fs = require('fs')
 const unzipper = require('unzipper')
 const fse = require('fs-extra')
-const chalk = require('chalk')
 
 module.exports = {
   command: 'init [dist]',
@@ -22,6 +22,8 @@ module.exports = {
     return yargs
   },
   async handler({ dist }) {
+    const spinner = ora('Initializing project...').start()
+
     try {
       const response = await axios.get('https://github.com/risecorejs/app-template/archive/main.zip', {
         responseType: 'arraybuffer'
@@ -46,9 +48,9 @@ module.exports = {
       await fse.remove(archivePath)
       await fse.remove(firstSubdirectory)
 
-      console.log(`${chalk.green('✔')} Project has been successfully initialized!`)
+      spinner.succeed('Project has been successfully initialized!')
     } catch (err) {
-      console.error(`${chalk.red('✖')} Error occurred while initializing the project!`)
+      spinner.fail('Error occurred while initializing the project!\n')
       console.error(err)
     }
   }

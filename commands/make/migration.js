@@ -3,7 +3,7 @@ const fs = require('fs/promises')
 const ejs = require('ejs')
 const chalk = require('chalk')
 
-const { checkModuleExists } = require('../../utils')
+const { checkModuleExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:migration [name]',

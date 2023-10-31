@@ -4,7 +4,7 @@ const chalk = require('chalk')
 const ejs = require('ejs')
 const _ = require('lodash')
 
-const { checkModuleExists } = require('../../utils')
+const { checkModuleExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:controller',

@@ -3,7 +3,7 @@ const chalk = require('chalk')
 const fs = require('fs/promises')
 const { performance } = require('perf_hooks')
 
-const { checkModuleExists } = require('../../utils')
+const { checkModuleExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'db:migrate [file]',
@@ -32,7 +32,7 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName, file: migrationFile }) {
-    const { sequelize, Migration } = require('./models')
+    const { sequelize, Migration } = require('../../lib/models')
 
     await Migration.sync()
 

@@ -2,7 +2,7 @@ const path = require('path')
 const { performance } = require('perf_hooks')
 const chalk = require('chalk')
 
-const { checkModuleExists } = require('../../utils')
+const { checkModuleExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'db:rollback [file]',
@@ -31,7 +31,7 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName, file: migrationFile }) {
-    const { sequelize, Migration } = require('./models')
+    const { sequelize, Migration } = require('../../lib/models')
 
     await Migration.sync()
 
