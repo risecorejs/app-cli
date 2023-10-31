@@ -1,14 +1,14 @@
 const axios = require('axios')
-const fs = require('fs')
 const fsPromises = require('fs/promises')
 const path = require('path')
+const fs = require('fs')
 const unzipper = require('unzipper')
 const fse = require('fs-extra')
 const chalk = require('chalk')
 
 module.exports = {
   command: 'init [dist]',
-  describe: 'Initialize a project',
+  describe: 'Initializing the Project',
   builder(yargs) {
     yargs.option('dist', {
       alias: 'd',
@@ -22,10 +22,8 @@ module.exports = {
     return yargs
   },
   async handler({ dist }) {
-    const repositoryUrl = 'https://github.com/risecorejs/app-template/archive/main.zip'
-
     try {
-      const response = await axios.get(repositoryUrl, {
+      const response = await axios.get('https://github.com/risecorejs/app-template/archive/main.zip', {
         responseType: 'arraybuffer'
       })
 
@@ -48,9 +46,9 @@ module.exports = {
       await fse.remove(archivePath)
       await fse.remove(firstSubdirectory)
 
-      console.log(chalk.green(`${chalk.green('✔')} Project has been successfully initialized!`))
+      console.log(`${chalk.green('✔')} Project has been successfully initialized!`)
     } catch (err) {
-      console.error(chalk.red(`${chalk.red('✖')} Error occurred while initializing the project!`))
+      console.error(`${chalk.red('✖')} Error occurred while initializing the project!`)
       console.error(err)
     }
   }
