@@ -8,7 +8,7 @@ const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'make:controller',
-  describe: 'Create a controller in a module',
+  describe: 'Generating a controller in a module',
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
@@ -41,9 +41,9 @@ module.exports = {
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
-      const controllerFileContent = ejs.render(template, { basePath: _.kebabCase(moduleName) })
+      const renderedTemplate = ejs.render(template, { basePath: _.kebabCase(moduleName) })
 
-      await fs.writeFile(controllerPath, controllerFileContent)
+      await fs.writeFile(controllerPath, renderedTemplate)
 
       console.log(chalk.green(`✔ Controller "${controllerFilename}" created in module "${moduleName}" successfully!`))
     }
