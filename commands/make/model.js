@@ -6,7 +6,7 @@ const chalk = require('chalk')
 const { checkModuleExists } = require('../../utils')
 
 module.exports = {
-  command: 'make:model',
+  command: 'make:model [name]',
   describe: 'Create a model in a module',
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })

@@ -9,7 +9,7 @@ const getMigrationModel = require('./models/Migration')
 const { checkModuleExists } = require('../../utils')
 
 module.exports = {
-  command: 'db:migrate',
+  command: 'db:migrate [file]',
   describe: 'Execute database migrations for modules in your project',
   builder(yargs) {
     yargs.option('module', {
