@@ -1,8 +1,8 @@
 const path = require('path')
 const { Sequelize } = require('sequelize')
-const { performance } = require('perf_hooks')
-const fs = require('fs/promises')
 const chalk = require('chalk')
+const fs = require('fs/promises')
+const { performance } = require('perf_hooks')
 
 const getMigrationModel = require('./models/Migration')
 
