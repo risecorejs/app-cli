@@ -29,7 +29,7 @@ module.exports = {
       try {
         await fs.access(middlewareFilepath)
 
-        console.error(`${chalk.red('✖')} Middleware "${middlewareFilepath}" already exists in module "${moduleName}"!`)
+        console.error(`${chalk.red('✖')} Middleware "${middlewareFilename}" already exists in module "${moduleName}"!`)
 
         return
       } catch (err) {
