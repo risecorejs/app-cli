@@ -36,7 +36,7 @@ module.exports = {
         }
       }
 
-      const templatePath = path.join(__dirname, 'templates', 'service.ejs')
+      const templatePath = path.join(__dirname, '...', '...', 'lib', 'templates', 'service.ejs')
 
       const template = await fs.readFile(templatePath, 'utf-8')
 

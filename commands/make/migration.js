@@ -44,7 +44,7 @@ module.exports = {
       const migrationFilename = `${migrationNumber}_${migrationDate}_${migrationName}.js`
 
       const migrationFilepath = path.join(migrationsPath, migrationFilename)
-      const templatePath = path.join(__dirname, 'templates', 'migration.ejs')
+      const templatePath = path.join(__dirname, '...', '...', 'lib', 'templates', 'migration.ejs')
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
