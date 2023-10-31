@@ -48,9 +48,9 @@ module.exports = {
       await fse.remove(archivePath)
       await fse.remove(firstSubdirectory)
 
-      console.log(chalk.green(`\n${chalk.green('✔')} Project has been successfully initialized!\n`))
+      console.log(chalk.green(`${chalk.green('✔')} Project has been successfully initialized!`))
     } catch (err) {
-      console.error(chalk.red(`\n${chalk.red('✖')} Error occurred while initializing the project!\n`))
+      console.error(chalk.red(`${chalk.red('✖')} Error occurred while initializing the project!`))
       console.error(err)
     }
   }
