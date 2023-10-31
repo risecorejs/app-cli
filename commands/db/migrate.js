@@ -14,7 +14,7 @@ module.exports = {
     yargs.option('file', { alias: 'f', describe: 'Migration file', type: 'string' })
     yargs.option('module', { alias: 'm', describe: 'Module name', type: 'string' })
 
-    if (yargs.argv.file) {
+    if (yargs.argv.file || yargs.argv._[1]) {
       yargs.demandOption('module', 'Module name must be provided when migrating a single file')
     }
 
@@ -43,7 +43,7 @@ module.exports = {
         migrations[0].migrationFiles = migrations[0].migrationFiles.filter((item) => item === migrationFile)
 
         if (!migrations[0].migrationFiles.length) {
-          console.error(`\n${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'\n`)
+          console.error(`\n${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'.\n`)
 
           return
         }
