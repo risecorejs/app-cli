@@ -38,17 +38,19 @@ module.exports = {
 
     const migrations = await getMigrations(moduleName)
 
-    if (migrations && migrations.length) {
-      if (migrationFile) {
+    if (migrationFile) {
+      if (migrations && migrations.length) {
         migrations[0].migrationFiles = migrations[0].migrationFiles.filter((item) => item === migrationFile)
-
-        if (!migrations[0].migrationFiles.length) {
-          console.error(`${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'.`)
-
-          process.exit(1)
-        }
       }
 
+      if (!migrations || !migrations.length || !migrations[0].migrationFiles.length) {
+        console.error(`${chalk.red('✖')} Migration '${migrationFile}' not found in module '${moduleName}'.`)
+
+        process.exit(1)
+      }
+    }
+
+    if (migrations && migrations.length) {
       console.log('\nRunning migrations:\n')
 
       for (const { moduleName, migrationFiles } of migrations) {
@@ -107,11 +109,7 @@ module.exports = {
         console.log()
       }
     } else {
-      if (migrationFile) {
-        console.error(`${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'.`)
-      } else {
-        console.log(chalk.gray('i No migrations to apply to the database.'))
-      }
+      console.log(chalk.gray('i No migrations to apply to the database.'))
     }
 
     await sequelize.close()
@@ -133,7 +131,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     await fs.access(modulesPath)
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(`${chalk.red('✖')} The 'modules' directory does not exist! Please create it.`)
+      console.error(`${chalk.red('✖')} The 'modules' directory does not exist!`)
 
       process.exit(1)
     } else {
