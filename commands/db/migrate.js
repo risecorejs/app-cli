@@ -10,9 +10,13 @@ const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'db:migrate',
-  describe: '',
+  describe: 'Execute database migrations for modules in your project',
   builder(yargs) {
-    yargs.option('module', { alias: 'm', describe: 'Module name', type: 'string' })
+    yargs.option('module', {
+      alias: 'm',
+      describe: 'Module name',
+      type: 'string'
+    })
     yargs.option('file', { alias: 'f', describe: 'Migration file', type: 'string' })
 
     if (yargs.argv.file) {
@@ -20,9 +24,12 @@ module.exports = {
     }
 
     yargs.example([
-      ['$0 db:migrate'],
-      ['$0 db:migrate --module users'],
-      ['$0 db:migrate --module users --file 0001_29102023_create_table_users.js']
+      ['$0 db:migrate', 'Execute all pending migrations for all modules'],
+      ['$0 db:migrate --module users', 'Execute all pending migrations for a specific module'],
+      [
+        '$0 db:migrate --module users --file 0001_29102023_create_table_users.js',
+        'Execute a specific migration file for a module'
+      ]
     ])
 
     return yargs
@@ -43,7 +50,7 @@ module.exports = {
         migrations[0].migrationFiles = migrations[0].migrationFiles.filter((item) => item === migrationFile)
 
         if (!migrations[0].migrationFiles.length) {
-          console.error(`\n${chalk.red('✖')}  Migration ${migrationFile} not found in "${moduleName}"\n`)
+          console.error(`\n${chalk.red('✖')}  Migration ${migrationFile} not found in module "${moduleName}"\n`)
 
           return
         }
@@ -62,7 +69,7 @@ module.exports = {
  * @param moduleName {string}
  * @param [skipErrorLog=false] {boolean}
  *
- * @returns {Promise<*[]|null|{moduleName, migrationFiles: string[]}>}
+ * @returns {Promise<null|{moduleName, migrationFiles: string[]}[]>}
  */
 async function getMigrations(moduleName, skipErrorLog = false) {
   const modulesPath = path.resolve('modules')
@@ -102,7 +109,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     } catch (err) {
       if (err.code === 'ENOENT') {
         if (!skipErrorLog) {
-          console.error(chalk.red(`✖ There is no migrations folder in the "${moduleName}" module!`))
+          console.error(chalk.red(`✖ Module "${moduleName}" does not have a migration folder!`))
         }
 
         return null
@@ -129,6 +136,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
 
 /**
  * Execute migrations
+ *
  * @param migrations
  * @param sequelize
  * @param Migration
