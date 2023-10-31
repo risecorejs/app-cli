@@ -27,7 +27,7 @@ module.exports = {
       try {
         await fs.access(servicePath)
 
-        console.error(chalk.red(`✖ Service "${serviceFilename}" already exists in module "${moduleName}"`))
+        console.error(`${chalk.red('✖')} Service "${serviceFilename}" already exists in module "${moduleName}"!`)
 
         return
       } catch (err) {
@@ -44,7 +44,7 @@ module.exports = {
 
       await fs.writeFile(servicePath, renderedTemplate)
 
-      console.log(chalk.green(`✔ Service "${serviceFilename}" created in module "${moduleName}" successfully!`))
+      console.log(`${chalk.green('✔')} Service "${serviceFilename}" created in module "${moduleName}" successfully!`)
     }
   }
 }

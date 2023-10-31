@@ -78,7 +78,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     await fs.access(modulesPath)
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(chalk.red('✖ The "modules" directory does not exist! Please create it.'))
+      console.error(`${chalk.red('✖')} The "modules" directory does not exist! Please create it.`)
 
       process.exit(1)
     } else {
@@ -109,7 +109,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     } catch (err) {
       if (err.code === 'ENOENT') {
         if (!skipErrorLog) {
-          console.error(chalk.red(`✖ Module "${moduleName}" does not have a migration folder!`))
+          console.error(`${chalk.red('✖')} Module "${moduleName}" does not have a migration folder!`)
         }
 
         return null
