@@ -37,7 +37,7 @@ module.exports = {
 
     const migrations = await Migration.findAll({
       where,
-      order: [['filename', 'DESC']]
+      order: [['createdAt', 'DESC']]
     })
 
     const groupMigrationsMap = new Map()

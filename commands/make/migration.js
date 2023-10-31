@@ -39,7 +39,7 @@ module.exports = {
 
       const migrationFiles = await fs.readdir(migrationsPath)
 
-      const migrationNumber = migrationFiles.length.toString().padStart(4, '0')
+      const migrationNumber = (migrationFiles.length + 1).toString().padStart(4, '0')
       const migrationDate = new Date().toISOString().slice(0, 10).replace(/-/g, '')
       const migrationFilename = `${migrationNumber}_${migrationDate}_${migrationName}.js`
 

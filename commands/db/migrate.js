@@ -188,7 +188,7 @@ async function executeMigrations(migrations, sequelize) {
     }
 
     if (appliedMigrationsCount.value === 0) {
-      console.log(chalk.gray(' No new migrations were applied to the database.'))
+      console.log(chalk.gray(' i  No new migrations were applied to the database.'))
     }
 
     console.log()
