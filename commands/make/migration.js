@@ -53,7 +53,7 @@ module.exports = {
       await fs.writeFile(migrationFilepath, renderedTemplate)
 
       console.log(
-        `${chalk.green('✔')} Migration "${migrationFilename}" created in module "${moduleName}" successfully!`
+        `${chalk.green('✔')} Migration '${migrationFilename}' created in module '${moduleName}' successfully!`
       )
     }
   }

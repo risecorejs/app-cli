@@ -40,7 +40,7 @@ module.exports = {
     try {
       await fs.access(modulePath)
 
-      console.error(`${chalk.red('✖')} Module "${moduleName}" already exists!`)
+      console.error(`${chalk.red('✖')} Module '${moduleName}' already exists!`)
 
       return
     } catch (err) {
@@ -51,7 +51,7 @@ module.exports = {
 
     await fs.mkdir(modulePath)
 
-    console.log(`${chalk.green('✔')} Module "${moduleName}" created successfully!`)
+    console.log(`${chalk.green('✔')} Module '${moduleName}' created successfully!`)
 
     if (service) {
       await makeServiceCommand.handler({

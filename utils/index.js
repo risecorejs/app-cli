@@ -18,7 +18,7 @@ async function checkModuleExists(modulePath, moduleName) {
     await fs.access(modulePath)
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(`${chalk.red('✖')} Module "${moduleName}" not found, first create a module!`)
+      console.error(`${chalk.red('✖')} Module '${moduleName}' not found, first create a module!`)
 
       return false
     } else {

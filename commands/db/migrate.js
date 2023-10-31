@@ -43,7 +43,7 @@ module.exports = {
         migrations[0].migrationFiles = migrations[0].migrationFiles.filter((item) => item === migrationFile)
 
         if (!migrations[0].migrationFiles.length) {
-          console.error(`\n${chalk.red('✖')}  Migration ${migrationFile} not found in module "${moduleName}"\n`)
+          console.error(`\n${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'\n`)
 
           return
         }
@@ -71,7 +71,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     await fs.access(modulesPath)
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(`${chalk.red('✖')} The "modules" directory does not exist! Please create it.`)
+      console.error(`${chalk.red('✖')} The 'modules' directory does not exist! Please create it.`)
 
       process.exit(1)
     } else {
@@ -102,7 +102,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     } catch (err) {
       if (err.code === 'ENOENT') {
         if (!skipErrorLog) {
-          console.error(`${chalk.red('✖')} Module "${moduleName}" does not have a migration folder!`)
+          console.error(`${chalk.red('✖')} Module '${moduleName}' does not have a migration folder!`)
         }
 
         return null
@@ -139,7 +139,7 @@ async function executeMigrations(migrations, sequelize) {
   console.log('\nRunning migrations:\n')
 
   for (const { moduleName, migrationFiles } of migrations) {
-    console.log(` Module ${moduleName}:`)
+    console.log(` Module '${moduleName}':`)
 
     const appliedMigrationsCount = { value: 0 }
 

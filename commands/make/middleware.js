@@ -29,7 +29,7 @@ module.exports = {
       try {
         await fs.access(middlewareFilepath)
 
-        console.error(`${chalk.red('✖')} Middleware "${middlewareFilename}" already exists in module "${moduleName}"!`)
+        console.error(`${chalk.red('✖')} Middleware '${middlewareFilename}' already exists in module '${moduleName}'!`)
 
         return
       } catch (err) {
@@ -57,7 +57,7 @@ module.exports = {
       await fs.writeFile(middlewareFilepath, renderedTemplate)
 
       console.log(
-        `${chalk.green('✔')} Middleware "${middlewareFilename}" created in module "${moduleName}" successfully!`
+        `${chalk.green('✔')} Middleware '${middlewareFilename}' created in module '${moduleName}' successfully!`
       )
     }
   }

@@ -29,7 +29,7 @@ module.exports = {
       try {
         await fs.access(modelFilepath)
 
-        console.error(`${chalk.red('✖')} Model "${modelFilename}" already exists in module "${moduleName}"!`)
+        console.error(`${chalk.red('✖')} Model '${modelFilename}' already exists in module '${moduleName}'!`)
 
         return
       } catch (err) {
@@ -56,7 +56,7 @@ module.exports = {
 
       await fs.writeFile(modelFilepath, renderedTemplate)
 
-      console.log(`${chalk.green('✔')} Model "${modelFilename}" created in module "${moduleName}" successfully!`)
+      console.log(`${chalk.green('✔')} Model '${modelFilename}' created in module '${moduleName}' successfully!`)
     }
   }
 }

@@ -28,7 +28,7 @@ module.exports = {
       try {
         await fs.access(controllerFilepath)
 
-        console.error(`${chalk.red('✖')} Controller "${controllerFilename}" already exists in module "${moduleName}"!`)
+        console.error(`${chalk.red('✖')} Controller '${controllerFilename}' already exists in module '${moduleName}'!`)
 
         return
       } catch (err) {
@@ -46,7 +46,7 @@ module.exports = {
       await fs.writeFile(controllerFilepath, renderedTemplate)
 
       console.log(
-        `${chalk.green('✔')} Controller "${controllerFilename}" created in module "${moduleName}" successfully!`
+        `${chalk.green('✔')} Controller '${controllerFilename}' created in module '${moduleName}' successfully!`
       )
     }
   }
