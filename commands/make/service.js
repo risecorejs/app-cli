@@ -7,7 +7,7 @@ const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'make:service',
-  describe: 'Create a service in a module',
+  describe: 'Generating a service in a module',
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
@@ -40,9 +40,9 @@ module.exports = {
 
       const template = await fs.readFile(templatePath, 'utf-8')
 
-      const serviceFileContent = ejs.render(template, { moduleName })
+      const renderedTemplate = ejs.render(template, { moduleName })
 
-      await fs.writeFile(servicePath, serviceFileContent)
+      await fs.writeFile(servicePath, renderedTemplate)
 
       console.log(chalk.green(`✔ Service "${serviceFilename}" created in module "${moduleName}" successfully!`))
     }
