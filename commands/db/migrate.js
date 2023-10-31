@@ -107,7 +107,11 @@ module.exports = {
         console.log()
       }
     } else {
-      console.log(chalk.gray('i  No migrations to apply to the database.'))
+      if (migrationFile) {
+        console.error(`${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'.`)
+      } else {
+        console.log(chalk.gray('i No migrations to apply to the database.'))
+      }
     }
 
     await sequelize.close()
