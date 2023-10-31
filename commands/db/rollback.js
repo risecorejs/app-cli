@@ -35,7 +35,6 @@ module.exports = {
   async handler({ module: moduleName, file: migrationFile }) {
     await sequelize.sync()
 
-    // todo: заменить на whereBuilder
     const where = {}
 
     if (moduleName) {
@@ -51,7 +50,9 @@ module.exports = {
       where.module = moduleName
     }
 
-    if (migrationFile) where.filename = migrationFile
+    if (migrationFile) {
+      where.filename = migrationFile
+    }
 
     const migrations = await Migration.findAll({
       where,
@@ -77,20 +78,20 @@ module.exports = {
         for (const filename of filenames) {
           const transaction = await sequelize.transaction()
 
+          await Migration.destroy({
+            where: {
+              filename,
+              module
+            },
+            transaction
+          })
+
           const migrationFilepath = path.resolve('modules', module, 'migrations', filename)
 
           try {
             const timeStart = performance.now()
 
             const { down: downMigration } = require(migrationFilepath)
-
-            await Migration.destroy({
-              where: {
-                filename,
-                module
-              },
-              transaction
-            })
 
             await downMigration(sequelize.getQueryInterface(), transaction)
 
@@ -106,7 +107,7 @@ module.exports = {
           } catch (err) {
             await transaction.rollback()
 
-            console.error(` ${chalk.red('✖')}  Applying ${filename}... ${chalk.red('FAILED')}\n`)
+            console.error(` ${chalk.red('✖')}  Unapplying ${filename}... ${chalk.red('FAILED')}\n`)
 
             throw err
           }
