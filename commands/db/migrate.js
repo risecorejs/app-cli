@@ -103,7 +103,7 @@ module.exports = {
         }
 
         if (appliedMigrationsCount.value === 0) {
-          console.log(chalk.gray(' i  No new migrations were applied to the database.'))
+          console.log(chalk.gray(' i  No new migrations to apply to the database.'))
         }
 
         console.log()
