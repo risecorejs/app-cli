@@ -7,7 +7,7 @@ const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'make:service',
-  describe: 'Generating a service in a module',
+  describe: 'Generate a service in a module',
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
 
