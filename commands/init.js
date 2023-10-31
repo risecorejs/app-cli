@@ -3,6 +3,8 @@ const fs = require('fs')
 const fsPromises = require('fs/promises')
 const path = require('path')
 const unzipper = require('unzipper')
+const fse = require('fs-extra')
+const chalk = require('chalk')
 
 module.exports = {
   command: 'init [dist]',
@@ -38,11 +40,18 @@ module.exports = {
         .pipe(unzipper.Extract({ path: dist }))
         .promise()
 
-      await fsPromises.unlink(archivePath)
+      const extractedFiles = await fsPromises.readdir(dist)
 
-      console.log('Repository successfully extracted to the specified directory:', dist)
-    } catch (error) {
-      console.error('Error while downloading and extracting the repository:', error)
+      const firstSubdirectory = path.join(dist, extractedFiles[0])
+
+      await fse.copy(firstSubdirectory, dist)
+      await fse.remove(archivePath)
+      await fse.remove(firstSubdirectory)
+
+      console.log(chalk.green(`\n${chalk.green('✔')} Project has been successfully initialized!\n`))
+    } catch (err) {
+      console.error(chalk.red(`\n${chalk.red('✖')} Error occurred while initializing the project!\n`))
+      console.error(err)
     }
   }
 }
