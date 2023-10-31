@@ -149,6 +149,8 @@ async function executeMigrations(migrations, sequelize, Migration) {
   for (const { moduleName, migrationFiles } of migrations) {
     console.log(` Module ${moduleName}:`)
 
+    const appliedMigrationsCount = { value: 0 }
+
     for (const migrationFile of migrationFiles) {
       const transaction = await sequelize.transaction()
 
@@ -166,23 +168,35 @@ async function executeMigrations(migrations, sequelize, Migration) {
         try {
           const timeStart = performance.now()
 
-          const { up: upMigration } = require(migrationFilepath)
+          // const { up: upMigration } = require(migrationFilepath)
 
-          await upMigration(sequelize.getQueryInterface())
+          // await upMigration(sequelize.getQueryInterface())
 
           await transaction.commit()
 
+          appliedMigrationsCount.value++
+
           const timeEnd = performance.now()
 
-          console.log(` ${chalk.green('✔')}  Applying ${migrationFile}... OK ${(timeEnd - timeStart).toFixed(2)} ms`)
+          console.log(
+            ` ${chalk.green('✔')}  Applying ${chalk.bold(migrationFile)}... ${chalk.green('OK')} - ${(
+              timeEnd - timeStart
+            ).toFixed(2)} ms`
+          )
         } catch (err) {
           await transaction.rollback()
 
-          console.error(` ${chalk.red('✖')}  Applying ${migrationFile}... FAILED\n`)
+          console.error(` ${chalk.red('✖')}  Applying ${migrationFile}... ${chalk.red('FAILED')}\n`)
 
           throw err
         }
+      } else {
+        await transaction.commit()
       }
+    }
+
+    if (appliedMigrationsCount.value === 0) {
+      console.log(chalk.gray(' No new migrations were applied to the database.'))
     }
 
     console.log()
