@@ -3,7 +3,7 @@
  *
  * @param {import('sequelize').QueryInterface} queryInterface - The Sequelize queryInterface object.
  */
-exports.up = async (queryInterface) => {
+exports.up = async (queryInterface, transaction) => {
   // Add your migration logic here to make changes to the database.
 }
 
@@ -12,6 +12,6 @@ exports.up = async (queryInterface) => {
  *
  * @param {import('sequelize').QueryInterface} queryInterface - The Sequelize queryInterface object.
  */
-exports.down = async (queryInterface) => {
+exports.down = async (queryInterface, transaction) => {
   // Add your migration logic here to revert the changes made by the `up` method.
 }

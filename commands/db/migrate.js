@@ -1,10 +1,9 @@
 const path = require('path')
-const { Sequelize } = require('sequelize')
 const chalk = require('chalk')
 const fs = require('fs/promises')
 const { performance } = require('perf_hooks')
 
-const getMigrationModel = require('./models/Migration')
+const { sequelize, Migration } = require('./models')
 
 const { checkModuleExists } = require('../../utils')
 
@@ -35,12 +34,6 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName, file: migrationFile }) {
-    const config = require(path.resolve('config'))
-
-    const sequelize = new Sequelize(config.database)
-
-    const Migration = getMigrationModel(sequelize)
-
     await sequelize.sync()
 
     const migrations = await getMigrations(moduleName)
@@ -56,7 +49,7 @@ module.exports = {
         }
       }
 
-      await executeMigrations(migrations, sequelize, Migration)
+      await executeMigrations(migrations, sequelize)
     }
 
     await sequelize.close()
@@ -139,11 +132,10 @@ async function getMigrations(moduleName, skipErrorLog = false) {
  *
  * @param migrations
  * @param sequelize
- * @param Migration
  *
  * @returns {Promise<void>}
  */
-async function executeMigrations(migrations, sequelize, Migration) {
+async function executeMigrations(migrations, sequelize) {
   console.log('\nRunning migrations:\n')
 
   for (const { moduleName, migrationFiles } of migrations) {
@@ -170,7 +162,7 @@ async function executeMigrations(migrations, sequelize, Migration) {
 
           const { up: upMigration } = require(migrationFilepath)
 
-          await upMigration(sequelize.getQueryInterface())
+          await upMigration(sequelize.getQueryInterface(), transaction)
 
           await transaction.commit()
 
