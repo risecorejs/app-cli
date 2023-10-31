@@ -50,6 +50,7 @@ module.exports = {
 
       where.module = moduleName
     }
+
     if (migrationFile) where.filename = migrationFile
 
     const migrations = await Migration.findAll({
