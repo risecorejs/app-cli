@@ -19,14 +19,16 @@ rcjs <command> [options]
 ```
 
 ## Commands
-- rcjs init [dist]: Initialize a project.
-- rcjs make:module [name]: Create a new module.
-- rcjs make:service: Create a service in a module.
-- rcjs make:controller: Create a controller in a module.
-- rcjs make:model [name]: Create a model in a module.
-- rcjs make:migrations: Generate database migration files.
-- rcjs db:migrate [file]: Execute database migrations for modules in your project.
-- rcjs db:rollback [file]: Rollback the last database migration.
+- `rcjs init [dist]`: Initializing the Project.
+- `rcjs make:module [name]`: Generating a new module.
+- `rcjs make:service`: Generating a service in a module.
+- `rcjs make:controller`: Generating a controller in a module.
+- `rcjs make:middleware`: Generating a middleware in a module.
+- `rcjs make:model [name]`: Generating a model in a module.
+- `rcjs make:migration [name]`: Generating a database migration file in a module.
+- `rcjs make:migrations`: Generating database migration files based on module models.
+- `rcjs db:migrate [file]`: Executing database migration files of modules.
+- `rcjs db:rollback [file]`: Rollback the last database migration.
 
 For a quick list of all commands, run:
 
