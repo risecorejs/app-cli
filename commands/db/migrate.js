@@ -1,9 +1,11 @@
 const path = require('path')
 const { Sequelize } = require('sequelize')
-
-const getMigrationModel = require('./models/Migration')
+const { performance } = require('perf_hooks')
 const fs = require('fs/promises')
 const chalk = require('chalk')
+
+const getMigrationModel = require('./models/Migration')
+
 const { checkModuleExists } = require('../../utils')
 
 module.exports = {
@@ -11,7 +13,11 @@ module.exports = {
   describe: '',
   builder(yargs) {
     yargs.option('module', { alias: 'm', describe: 'Module name', type: 'string' })
-    yargs.option('file', { alias: 'm', describe: 'Migration file', type: 'string' })
+    yargs.option('file', { alias: 'f', describe: 'Migration file', type: 'string' })
+
+    if (yargs.argv.file) {
+      yargs.demandOption('module', 'Module name must be provided when migrating a single file')
+    }
 
     yargs.example([
       ['$0 db:migrate'],
@@ -33,7 +39,17 @@ module.exports = {
     const migrations = await getMigrations(moduleName)
 
     if (migrations) {
-      console.log(migrations)
+      if (migrationFile) {
+        migrations[0].migrationFiles = migrations[0].migrationFiles.filter((item) => item === migrationFile)
+
+        if (!migrations[0].migrationFiles.length) {
+          console.error(`\n${chalk.red('✖')}  Migration ${migrationFile} not found in "${moduleName}"\n`)
+
+          return
+        }
+      }
+
+      await executeMigrations(migrations, sequelize, Migration)
     }
 
     await sequelize.close()
@@ -108,5 +124,59 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     }
 
     return migrations
+  }
+}
+
+/**
+ * Execute migrations
+ * @param migrations
+ * @param sequelize
+ * @param Migration
+ *
+ * @returns {Promise<void>}
+ */
+async function executeMigrations(migrations, sequelize, Migration) {
+  console.log('\nRunning migrations:\n')
+
+  for (const { moduleName, migrationFiles } of migrations) {
+    console.log(` Module ${moduleName}:`)
+
+    for (const migrationFile of migrationFiles) {
+      const transaction = await sequelize.transaction()
+
+      const [, created] = await Migration.findOrCreate({
+        where: {
+          filename: migrationFile,
+          module: moduleName
+        },
+        transaction
+      })
+
+      if (created) {
+        const migrationFilepath = path.resolve('modules', moduleName, 'migrations', migrationFile)
+
+        try {
+          const timeStart = performance.now()
+
+          const { up: upMigration } = require(migrationFilepath)
+
+          await upMigration(sequelize.getQueryInterface())
+
+          await transaction.commit()
+
+          const timeEnd = performance.now()
+
+          console.log(` ${chalk.green('✔')}  Applying ${migrationFile}... OK ${(timeEnd - timeStart).toFixed(2)} ms`)
+        } catch (err) {
+          await transaction.rollback()
+
+          console.error(` ${chalk.red('✖')}  Applying ${migrationFile}... FAILED\n`)
+
+          throw err
+        }
+      }
+    }
+
+    console.log()
   }
 }
