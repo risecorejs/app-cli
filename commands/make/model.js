@@ -12,7 +12,7 @@ module.exports = {
     yargs.option('module', { alias: 'm', describe: 'Module name', demandOption: true, type: 'string' })
     yargs.option('name', { alias: 'n', describe: 'Model name', demandOption: true, type: 'string' })
 
-    yargs.example([['$0 make:model --module users --name User']])
+    yargs.example([['$0 make:model User --module users'], ['$0 make:model --name User --module users']])
 
     return yargs
   },

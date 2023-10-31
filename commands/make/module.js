@@ -16,8 +16,8 @@ module.exports = {
     yargs.option('model', { alias: 'm', describe: 'Generate a model', type: 'string' })
 
     yargs.example([
-      ['$0 make:module --name auth'],
-      ['$0 make:module --name auth'],
+      ['$0 make:module users'],
+      ['$0 make:module --name users'],
       ['$0 make:module --name users --service --controller --model User']
     ])
 
