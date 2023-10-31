@@ -38,78 +38,76 @@ module.exports = {
 
     const migrations = await getMigrations(moduleName)
 
-    if (migrations) {
+    if (migrations && migrations.length) {
+      if (migrationFile) {
+        migrations[0].migrationFiles = migrations[0].migrationFiles.filter((item) => item === migrationFile)
+
+        if (!migrations[0].migrationFiles.length) {
+          console.error(`${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'.`)
+
+          process.exit(1)
+        }
+      }
+
       console.log('\nRunning migrations:\n')
 
-      if (migrations.length) {
-        if (migrationFile) {
-          migrations[0].migrationFiles = migrations[0].migrationFiles.filter((item) => item === migrationFile)
+      for (const { moduleName, migrationFiles } of migrations) {
+        console.log(` Module '${moduleName}':`)
 
-          if (!migrations[0].migrationFiles.length) {
-            console.error(`\n${chalk.red('✖')}  Migration '${migrationFile}' not found in module '${moduleName}'.\n`)
+        const appliedMigrationsCount = { value: 0 }
 
-            return
-          }
-        }
+        for (const migrationFile of migrationFiles) {
+          const transaction = await sequelize.transaction()
 
-        for (const { moduleName, migrationFiles } of migrations) {
-          console.log(` Module '${moduleName}':`)
+          const [, created] = await Migration.findOrCreate({
+            where: {
+              filename: migrationFile,
+              module: moduleName
+            },
+            transaction
+          })
 
-          const appliedMigrationsCount = { value: 0 }
+          if (created) {
+            const migrationFilepath = path.resolve('modules', moduleName, 'migrations', migrationFile)
 
-          for (const migrationFile of migrationFiles) {
-            const transaction = await sequelize.transaction()
+            try {
+              const timeStart = performance.now()
 
-            const [, created] = await Migration.findOrCreate({
-              where: {
-                filename: migrationFile,
-                module: moduleName
-              },
-              transaction
-            })
+              const { up: upMigration } = require(migrationFilepath)
 
-            if (created) {
-              const migrationFilepath = path.resolve('modules', moduleName, 'migrations', migrationFile)
+              await upMigration(sequelize.getQueryInterface(), transaction)
 
-              try {
-                const timeStart = performance.now()
-
-                const { up: upMigration } = require(migrationFilepath)
-
-                await upMigration(sequelize.getQueryInterface(), transaction)
-
-                await transaction.commit()
-
-                appliedMigrationsCount.value++
-
-                const timeEnd = performance.now()
-
-                console.log(
-                  ` ${chalk.green('✔')}  Applying ${chalk.bold(migrationFile)}... ${chalk.green('OK')} - ${(
-                    timeEnd - timeStart
-                  ).toFixed(2)} ms`
-                )
-              } catch (err) {
-                await transaction.rollback()
-
-                console.error(` ${chalk.red('✖')}  Applying ${migrationFile}... ${chalk.red('FAILED')}\n`)
-
-                throw err
-              }
-            } else {
               await transaction.commit()
+
+              appliedMigrationsCount.value++
+
+              const timeEnd = performance.now()
+
+              console.log(
+                ` ${chalk.green('✔')}  Applying ${chalk.bold(migrationFile)}... ${chalk.green('OK')} - ${(
+                  timeEnd - timeStart
+                ).toFixed(2)} ms`
+              )
+            } catch (err) {
+              await transaction.rollback()
+
+              console.error(` ${chalk.red('✖')}  Applying ${migrationFile}... ${chalk.red('FAILED')}\n`)
+
+              throw err
             }
+          } else {
+            await transaction.commit()
           }
-
-          if (appliedMigrationsCount.value === 0) {
-            console.log(chalk.gray(' i  No new migrations were applied to the database.'))
-          }
-
-          console.log()
         }
-      } else {
-        console.log(chalk.gray(' i  No migrations to apply to the database.\n'))
+
+        if (appliedMigrationsCount.value === 0) {
+          console.log(chalk.gray(' i  No new migrations were applied to the database.'))
+        }
+
+        console.log()
       }
+    } else {
+      console.log(chalk.gray('i  No migrations to apply to the database.'))
     }
 
     await sequelize.close()
@@ -153,9 +151,11 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     try {
       await fs.access(moduleMigrationsPath)
 
+      const moduleMigrationFiles = await fs.readdir(moduleMigrationsPath)
+
       const moduleMigrations = {
         moduleName,
-        migrationFiles: await fs.readdir(moduleMigrationsPath)
+        migrationFiles: moduleMigrationFiles
       }
 
       return moduleMigrations.migrationFiles.length ? [moduleMigrations] : null
