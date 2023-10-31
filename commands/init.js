@@ -8,7 +8,7 @@ const chalk = require('chalk')
 
 module.exports = {
   command: 'init [dist]',
-  describe: 'Initialize a project from a remote repository',
+  describe: 'Initialize a project',
   builder(yargs) {
     yargs.option('dist', {
       alias: 'd',
