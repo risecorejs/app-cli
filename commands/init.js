@@ -17,7 +17,7 @@ module.exports = {
       default: '.'
     })
 
-    yargs.example([['$0 init .'], ['$0 init --dist .']])
+    yargs.example([['$0 init my-app'], ['$0 init --dist my-app']])
 
     return yargs
   },
