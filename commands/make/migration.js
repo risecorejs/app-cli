@@ -1,7 +1,8 @@
 const path = require('path')
 const fs = require('fs/promises')
-const chalk = require('chalk')
 const ejs = require('ejs')
+const chalk = require('chalk')
+
 const { checkModuleExists } = require('../../utils')
 
 module.exports = {
@@ -25,19 +26,6 @@ module.exports = {
 
     if (moduleExists) {
       const migrationsPath = path.join(modulePath, 'migrations')
-      const migrationFilename = `${migrationName}.js`
-      const migrationFilepath = path.join(migrationsPath, migrationFilename)
-
-      try {
-        await fs.access(migrationFilepath)
-
-        console.error(`${chalk.red('✖')} Migration "${migrationFilename}" already exists in module "${moduleName}"!`)
-        return
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err
-        }
-      }
 
       try {
         await fs.access(migrationsPath)
@@ -48,6 +36,13 @@ module.exports = {
           throw err
         }
       }
+
+      const migrationFiles = await fs.readdir(migrationsPath)
+
+      const migrationNumber = migrationFiles.length.toString().padStart(4, '0')
+      const migrationDate = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+      const migrationFilename = `${migrationNumber}_${migrationDate}_${migrationName}.js`
+      const migrationFilepath = path.join(migrationsPath, migrationFilename)
 
       const templatePath = path.join(__dirname, 'templates', 'migration.ejs')
 
