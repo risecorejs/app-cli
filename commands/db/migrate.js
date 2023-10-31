@@ -10,14 +10,10 @@ const { checkModuleExists } = require('../../utils')
 
 module.exports = {
   command: 'db:migrate [file]',
-  describe: 'Execute database migrations for modules in your project',
+  describe: 'Execute database migration files of modules',
   builder(yargs) {
-    yargs.option('module', {
-      alias: 'm',
-      describe: 'Module name',
-      type: 'string'
-    })
     yargs.option('file', { alias: 'f', describe: 'Migration file', type: 'string' })
+    yargs.option('module', { alias: 'm', describe: 'Module name', type: 'string' })
 
     if (yargs.argv.file) {
       yargs.demandOption('module', 'Module name must be provided when migrating a single file')
@@ -27,7 +23,11 @@ module.exports = {
       ['$0 db:migrate', 'Execute all pending migrations for all modules'],
       ['$0 db:migrate --module users', 'Execute all pending migrations for a specific module'],
       [
-        '$0 db:migrate --module users --file 0001_29102023_create_table_users.js',
+        '$0 db:migrate 0001_20231029_create_table_users.js --module users',
+        'Execute a specific migration file for a module'
+      ],
+      [
+        '$0 db:migrate --file 0001_20231029_create_table_users.js --module users',
         'Execute a specific migration file for a module'
       ]
     ])
@@ -168,9 +168,9 @@ async function executeMigrations(migrations, sequelize, Migration) {
         try {
           const timeStart = performance.now()
 
-          // const { up: upMigration } = require(migrationFilepath)
+          const { up: upMigration } = require(migrationFilepath)
 
-          // await upMigration(sequelize.getQueryInterface())
+          await upMigration(sequelize.getQueryInterface())
 
           await transaction.commit()
 
