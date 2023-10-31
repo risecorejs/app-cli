@@ -7,7 +7,7 @@ const makeControllerCommand = require('./controller')
 const makeModelCommand = require('./model')
 
 module.exports = {
-  command: 'make:module',
+  command: 'make:module [name]',
   describe: 'Create a new module',
   builder(yargs) {
     yargs.option('name', { alias: 'n', describe: 'Module name', demandOption: true, type: 'string' })

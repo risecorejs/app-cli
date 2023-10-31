@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize')
 
-module.exports = (sequelizeInstance) => {
+module.exports = (sequelize) => {
   class <%= modelName %> extends Model {
     static relations(models) {
       // Define relationships with other models here
@@ -23,7 +23,7 @@ module.exports = (sequelizeInstance) => {
       // }
     },
     {
-      sequelize: sequelizeInstance,
+      sequelize,
       autoMigrations: true,
       tableTable: 'your_table_name', // Specify the table name for your model
       // paranoid: true
