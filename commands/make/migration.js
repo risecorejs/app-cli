@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs/promises')
 const ejs = require('ejs')
 
-const { checkModuleExists } = require('../../lib/utils')
+const { checkModuleExists, createDirectoryIfNotExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:migration [name]',
@@ -28,15 +28,7 @@ module.exports = {
 
     const migrationsPath = path.join(modulePath, 'migrations')
 
-    try {
-      await fs.access(migrationsPath)
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        await fs.mkdir(migrationsPath)
-      } else {
-        throw err
-      }
-    }
+    await createDirectoryIfNotExists(migrationsPath)
 
     const migrationFiles = await fs.readdir(migrationsPath)
 

@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs/promises')
 const ejs = require('ejs')
 
-const { checkModuleExists, checkFileUniqueness } = require('../../lib/utils')
+const { checkModuleExists, checkFileUniqueness, createDirectoryIfNotExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:middleware [name]',
@@ -33,15 +33,7 @@ module.exports = {
       spinner
     )
 
-    try {
-      await fs.access(middlewarePath)
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        await fs.mkdir(middlewarePath)
-      } else {
-        throw err
-      }
-    }
+    await createDirectoryIfNotExists(middlewarePath)
 
     const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'middleware.ejs')
 
