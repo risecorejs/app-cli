@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs/promises')
 const ejs = require('ejs')
 
-const { checkModuleExists } = require('../../lib/utils')
+const { checkModuleExists, checkFileUniqueness } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:service',
@@ -25,17 +25,11 @@ module.exports = {
     const serviceFilename = `${moduleName}.service.js`
     const serviceFilepath = path.join(modulePath, serviceFilename)
 
-    try {
-      await fs.access(serviceFilepath)
-
-      spinner.fail(`Service '${serviceFilename}' already exists in module '${moduleName}'!`)
-
-      process.exit(1)
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        throw err
-      }
-    }
+    await checkFileUniqueness(
+      serviceFilepath,
+      `Service '${serviceFilename}' already exists in module '${moduleName}'!`,
+      spinner
+    )
 
     const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'service.ejs')
 

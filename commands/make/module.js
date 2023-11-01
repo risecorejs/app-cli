@@ -5,6 +5,7 @@ const fs = require('fs/promises')
 const makeServiceCommand = require('./service')
 const makeControllerCommand = require('./controller')
 const makeModelCommand = require('./model')
+const { checkFileUniqueness } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:module [name]',
@@ -39,17 +40,7 @@ module.exports = {
       }
     }
 
-    try {
-      await fs.access(modulePath)
-
-      spinner.fail(`Module '${moduleName}' already exists!`)
-
-      process.exit(1)
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        throw err
-      }
-    }
+    await checkFileUniqueness(modulePath, `Module '${moduleName}' already exists!`, spinner)
 
     await fs.mkdir(modulePath)
 

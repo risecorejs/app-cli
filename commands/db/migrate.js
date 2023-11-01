@@ -3,7 +3,7 @@ const chalk = require('chalk')
 const fs = require('fs/promises')
 const { performance } = require('perf_hooks')
 
-const { checkModuleExists, logError } = require('../../lib/utils')
+const { logError, checkDirectoryExists, checkModuleExists } = require('../../lib/utils')
 
 module.exports = {
   command: 'db:migrate [file]',
@@ -127,17 +127,7 @@ module.exports = {
 async function getMigrations(moduleName, skipErrorLog = false) {
   const modulesPath = path.resolve('modules')
 
-  try {
-    await fs.access(modulesPath)
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      logError("The 'modules' directory does not exist!")
-
-      process.exit(1)
-    } else {
-      throw err
-    }
-  }
+  await checkDirectoryExists(modulesPath, "The 'modules' directory does not exist!")
 
   if (moduleName) {
     const modulePath = path.join(modulesPath, moduleName)

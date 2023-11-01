@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs/promises')
 const ejs = require('ejs')
 
-const { checkModuleExists } = require('../../lib/utils')
+const { checkModuleExists, checkFileUniqueness } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:middleware [name]',
@@ -27,17 +27,11 @@ module.exports = {
     const middlewareFilename = `${middlewareName}.middleware.js`
     const middlewareFilepath = path.join(middlewarePath, middlewareFilename)
 
-    try {
-      await fs.access(middlewareFilepath)
-
-      spinner.fail(`Middleware '${middlewareFilename}' already exists in module '${moduleName}'!`)
-
-      process.exit(1)
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        throw err
-      }
-    }
+    await checkFileUniqueness(
+      middlewareFilepath,
+      `Middleware '${middlewareFilename}' already exists in module '${moduleName}'!`,
+      spinner
+    )
 
     try {
       await fs.access(middlewarePath)

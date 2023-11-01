@@ -4,7 +4,7 @@ const fs = require('fs/promises')
 const ejs = require('ejs')
 const _ = require('lodash')
 
-const { checkModuleExists } = require('../../lib/utils')
+const { checkModuleExists, checkFileUniqueness } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:controller',
@@ -26,17 +26,11 @@ module.exports = {
     const controllerFilename = `${moduleName}.controller.js`
     const controllerFilepath = path.join(modulePath, controllerFilename)
 
-    try {
-      await fs.access(controllerFilepath)
-
-      spinner.fail(`Controller '${controllerFilename}' already exists in module '${moduleName}'!`)
-
-      process.exit(1)
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        throw err
-      }
-    }
+    await checkFileUniqueness(
+      controllerFilepath,
+      `Controller '${controllerFilename}' already exists in module '${moduleName}'!`,
+      spinner
+    )
 
     const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'controller.ejs')
 

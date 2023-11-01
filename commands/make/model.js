@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs/promises')
 const ejs = require('ejs')
 
-const { checkModuleExists } = require('../../lib/utils')
+const { checkModuleExists, checkFileUniqueness } = require('../../lib/utils')
 
 module.exports = {
   command: 'make:model [name]',
@@ -27,17 +27,11 @@ module.exports = {
     const modelFilename = `${modelName}.js`
     const modelFilepath = path.join(modelsPath, modelFilename)
 
-    try {
-      await fs.access(modelFilepath)
-
-      spinner.fail(`Model '${modelFilename}' already exists in module '${moduleName}'!`)
-
-      process.exit(1)
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        throw err
-      }
-    }
+    await checkFileUniqueness(
+      modelFilepath,
+      `Model '${modelFilename}' already exists in module '${moduleName}'!`,
+      spinner
+    )
 
     try {
       await fs.access(modelsPath)
