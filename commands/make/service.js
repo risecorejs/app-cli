@@ -1,6 +1,6 @@
+const ora = require('ora')
 const path = require('path')
 const fs = require('fs/promises')
-const chalk = require('chalk')
 const ejs = require('ejs')
 
 const { checkModuleExists } = require('../../lib/utils')
@@ -16,35 +16,35 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName }) {
+    const spinner = ora('Generating service...').start()
+
     const modulePath = path.resolve('modules', moduleName)
 
-    const moduleExists = await checkModuleExists(modulePath, moduleName)
+    await checkModuleExists(modulePath, moduleName, spinner)
 
-    if (moduleExists) {
-      const serviceFilename = `${moduleName}.service.js`
-      const serviceFilepath = path.join(modulePath, serviceFilename)
+    const serviceFilename = `${moduleName}.service.js`
+    const serviceFilepath = path.join(modulePath, serviceFilename)
 
-      try {
-        await fs.access(serviceFilepath)
+    try {
+      await fs.access(serviceFilepath)
 
-        console.error(`${chalk.red('✖')} Service '${serviceFilename}' already exists in module '${moduleName}'!`)
+      spinner.fail(`Service '${serviceFilename}' already exists in module '${moduleName}'!`)
 
-        return
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err
-        }
+      process.exit(1)
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        throw err
       }
-
-      const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'service.ejs')
-
-      const template = await fs.readFile(templatePath, 'utf-8')
-
-      const renderedTemplate = ejs.render(template, { moduleName })
-
-      await fs.writeFile(serviceFilepath, renderedTemplate)
-
-      console.log(`${chalk.green('✔')} Service '${serviceFilename}' created in module '${moduleName}' successfully!`)
     }
+
+    const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'service.ejs')
+
+    const template = await fs.readFile(templatePath, 'utf-8')
+
+    const renderedTemplate = ejs.render(template, { moduleName })
+
+    await fs.writeFile(serviceFilepath, renderedTemplate)
+
+    spinner.succeed(`Service '${serviceFilename}' created in module '${moduleName}' successfully!`)
   }
 }

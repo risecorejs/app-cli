@@ -1,5 +1,5 @@
-const axios = require('axios')
 const ora = require('ora')
+const axios = require('axios')
 const fsPromises = require('fs/promises')
 const path = require('path')
 const fs = require('fs')

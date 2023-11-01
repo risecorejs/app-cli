@@ -3,7 +3,7 @@ const chalk = require('chalk')
 const fs = require('fs/promises')
 const { performance } = require('perf_hooks')
 
-const { checkModuleExists } = require('../../lib/utils')
+const { checkModuleExists, logError } = require('../../lib/utils')
 
 module.exports = {
   command: 'db:migrate [file]',
@@ -44,7 +44,7 @@ module.exports = {
       }
 
       if (!migrations || !migrations.length || !migrations[0].migrationFiles.length) {
-        console.error(`${chalk.red('✖')} Migration '${migrationFile}' not found in module '${moduleName}'.`)
+        logError(`Migration '${migrationFile}' not found in module '${moduleName}'!`)
 
         process.exit(1)
       }
@@ -131,7 +131,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     await fs.access(modulesPath)
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(`${chalk.red('✖')} The 'modules' directory does not exist!`)
+      logError("The 'modules' directory does not exist!")
 
       process.exit(1)
     } else {
@@ -142,11 +142,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
   if (moduleName) {
     const modulePath = path.join(modulesPath, moduleName)
 
-    const moduleExists = await checkModuleExists(modulePath, moduleName)
-
-    if (!moduleExists) {
-      process.exit(1)
-    }
+    await checkModuleExists(modulePath, moduleName)
 
     const moduleMigrationsPath = path.join(modulePath, 'migrations')
 
@@ -164,7 +160,7 @@ async function getMigrations(moduleName, skipErrorLog = false) {
     } catch (err) {
       if (err.code === 'ENOENT') {
         if (!skipErrorLog) {
-          console.error(`${chalk.red('✖')} Module '${moduleName}' does not have a migration folder!`)
+          logError(`Module '${moduleName}' does not have a migration folder!`)
         }
 
         return null

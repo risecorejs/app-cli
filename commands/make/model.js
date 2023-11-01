@@ -1,6 +1,6 @@
+const ora = require('ora')
 const path = require('path')
 const fs = require('fs/promises')
-const chalk = require('chalk')
 const ejs = require('ejs')
 
 const { checkModuleExists } = require('../../lib/utils')
@@ -17,46 +17,46 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName, name: modelName }) {
+    const spinner = ora('Generating model...').start()
+
     const modulePath = path.resolve('modules', moduleName)
 
-    const moduleExists = await checkModuleExists(modulePath, moduleName)
+    await checkModuleExists(modulePath, moduleName, spinner)
 
-    if (moduleExists) {
-      const modelsPath = path.join(modulePath, 'models')
-      const modelFilename = `${modelName}.js`
-      const modelFilepath = path.join(modelsPath, modelFilename)
+    const modelsPath = path.join(modulePath, 'models')
+    const modelFilename = `${modelName}.js`
+    const modelFilepath = path.join(modelsPath, modelFilename)
 
-      try {
-        await fs.access(modelFilepath)
+    try {
+      await fs.access(modelFilepath)
 
-        console.error(`${chalk.red('✖')} Model '${modelFilename}' already exists in module '${moduleName}'!`)
+      spinner.fail(`Model '${modelFilename}' already exists in module '${moduleName}'!`)
 
-        return
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err
-        }
+      process.exit(1)
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        throw err
       }
-
-      try {
-        await fs.access(modelsPath)
-      } catch (err) {
-        if (err.code === 'ENOENT') {
-          await fs.mkdir(modelsPath)
-        } else {
-          throw err
-        }
-      }
-
-      const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'model.ejs')
-
-      const template = await fs.readFile(templatePath, 'utf-8')
-
-      const renderedTemplate = ejs.render(template, { modelName })
-
-      await fs.writeFile(modelFilepath, renderedTemplate)
-
-      console.log(`${chalk.green('✔')} Model '${modelFilename}' created in module '${moduleName}' successfully!`)
     }
+
+    try {
+      await fs.access(modelsPath)
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        await fs.mkdir(modelsPath)
+      } else {
+        throw err
+      }
+    }
+
+    const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'model.ejs')
+
+    const template = await fs.readFile(templatePath, 'utf-8')
+
+    const renderedTemplate = ejs.render(template, { modelName })
+
+    await fs.writeFile(modelFilepath, renderedTemplate)
+
+    spinner.succeed(`Model '${modelFilename}' created in module '${moduleName}' successfully!`)
   }
 }

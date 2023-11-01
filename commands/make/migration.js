@@ -1,7 +1,7 @@
+const ora = require('ora')
 const path = require('path')
 const fs = require('fs/promises')
 const ejs = require('ejs')
-const chalk = require('chalk')
 
 const { checkModuleExists } = require('../../lib/utils')
 
@@ -20,41 +20,39 @@ module.exports = {
     return yargs
   },
   async handler({ name: migrationName, module: moduleName }) {
+    const spinner = ora('Generating migration...').start()
+
     const modulePath = path.resolve('modules', moduleName)
 
-    const moduleExists = await checkModuleExists(modulePath, moduleName)
+    await checkModuleExists(modulePath, moduleName, spinner)
 
-    if (moduleExists) {
-      const migrationsPath = path.join(modulePath, 'migrations')
+    const migrationsPath = path.join(modulePath, 'migrations')
 
-      try {
-        await fs.access(migrationsPath)
-      } catch (err) {
-        if (err.code === 'ENOENT') {
-          await fs.mkdir(migrationsPath)
-        } else {
-          throw err
-        }
+    try {
+      await fs.access(migrationsPath)
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        await fs.mkdir(migrationsPath)
+      } else {
+        throw err
       }
-
-      const migrationFiles = await fs.readdir(migrationsPath)
-
-      const migrationNumber = (migrationFiles.length + 1).toString().padStart(4, '0')
-      const migrationDate = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-      const migrationFilename = `${migrationNumber}_${migrationDate}_${migrationName}.js`
-
-      const migrationFilepath = path.join(migrationsPath, migrationFilename)
-      const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'migration.ejs')
-
-      const template = await fs.readFile(templatePath, 'utf-8')
-
-      const renderedTemplate = ejs.render(template)
-
-      await fs.writeFile(migrationFilepath, renderedTemplate)
-
-      console.log(
-        `${chalk.green('✔')} Migration '${migrationFilename}' created in module '${moduleName}' successfully!`
-      )
     }
+
+    const migrationFiles = await fs.readdir(migrationsPath)
+
+    const migrationNumber = (migrationFiles.length + 1).toString().padStart(4, '0')
+    const migrationDate = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+    const migrationFilename = `${migrationNumber}_${migrationDate}_${migrationName}.js`
+
+    const migrationFilepath = path.join(migrationsPath, migrationFilename)
+    const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'migration.ejs')
+
+    const template = await fs.readFile(templatePath, 'utf-8')
+
+    const renderedTemplate = ejs.render(template)
+
+    await fs.writeFile(migrationFilepath, renderedTemplate)
+
+    spinner.succeed(`Migration '${migrationFilename}' created in module '${moduleName}' successfully!`)
   }
 }

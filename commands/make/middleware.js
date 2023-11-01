@@ -1,6 +1,6 @@
+const ora = require('ora')
 const path = require('path')
 const fs = require('fs/promises')
-const chalk = require('chalk')
 const ejs = require('ejs')
 
 const { checkModuleExists } = require('../../lib/utils')
@@ -17,48 +17,46 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName, name: middlewareName }) {
+    const spinner = ora('Generating middleware...').start()
+
     const modulePath = path.resolve('modules', moduleName)
 
-    const moduleExists = await checkModuleExists(modulePath, moduleName)
+    await checkModuleExists(modulePath, moduleName, spinner)
 
-    if (moduleExists) {
-      const middlewarePath = path.join(modulePath, 'middleware')
-      const middlewareFilename = `${middlewareName}.middleware.js`
-      const middlewareFilepath = path.join(middlewarePath, middlewareFilename)
+    const middlewarePath = path.join(modulePath, 'middleware')
+    const middlewareFilename = `${middlewareName}.middleware.js`
+    const middlewareFilepath = path.join(middlewarePath, middlewareFilename)
 
-      try {
-        await fs.access(middlewareFilepath)
+    try {
+      await fs.access(middlewareFilepath)
 
-        console.error(`${chalk.red('✖')} Middleware '${middlewareFilename}' already exists in module '${moduleName}'!`)
+      spinner.fail(`Middleware '${middlewareFilename}' already exists in module '${moduleName}'!`)
 
-        return
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err
-        }
+      process.exit(1)
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        throw err
       }
-
-      try {
-        await fs.access(middlewarePath)
-      } catch (err) {
-        if (err.code === 'ENOENT') {
-          await fs.mkdir(middlewarePath)
-        } else {
-          throw err
-        }
-      }
-
-      const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'middleware.ejs')
-
-      const template = await fs.readFile(templatePath, 'utf-8')
-
-      const renderedTemplate = ejs.render(template)
-
-      await fs.writeFile(middlewareFilepath, renderedTemplate)
-
-      console.log(
-        `${chalk.green('✔')} Middleware '${middlewareFilename}' created in module '${moduleName}' successfully!`
-      )
     }
+
+    try {
+      await fs.access(middlewarePath)
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        await fs.mkdir(middlewarePath)
+      } else {
+        throw err
+      }
+    }
+
+    const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'middleware.ejs')
+
+    const template = await fs.readFile(templatePath, 'utf-8')
+
+    const renderedTemplate = ejs.render(template)
+
+    await fs.writeFile(middlewareFilepath, renderedTemplate)
+
+    spinner.succeed(`Middleware '${middlewareFilename}' created in module '${moduleName}' successfully!`)
   }
 }

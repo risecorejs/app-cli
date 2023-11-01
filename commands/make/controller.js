@@ -1,6 +1,6 @@
+const ora = require('ora')
 const path = require('path')
 const fs = require('fs/promises')
-const chalk = require('chalk')
 const ejs = require('ejs')
 const _ = require('lodash')
 
@@ -17,37 +17,35 @@ module.exports = {
     return yargs
   },
   async handler({ module: moduleName }) {
+    const spinner = ora('Generating controller...').start()
+
     const modulePath = path.resolve('modules', moduleName)
 
-    const moduleExists = await checkModuleExists(modulePath, moduleName)
+    await checkModuleExists(modulePath, moduleName, spinner)
 
-    if (moduleExists) {
-      const controllerFilename = `${moduleName}.controller.js`
-      const controllerFilepath = path.join(modulePath, controllerFilename)
+    const controllerFilename = `${moduleName}.controller.js`
+    const controllerFilepath = path.join(modulePath, controllerFilename)
 
-      try {
-        await fs.access(controllerFilepath)
+    try {
+      await fs.access(controllerFilepath)
 
-        console.error(`${chalk.red('✖')} Controller '${controllerFilename}' already exists in module '${moduleName}'!`)
+      spinner.fail(`Controller '${controllerFilename}' already exists in module '${moduleName}'!`)
 
-        return
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err
-        }
+      process.exit(1)
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        throw err
       }
-
-      const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'controller.ejs')
-
-      const template = await fs.readFile(templatePath, 'utf-8')
-
-      const renderedTemplate = ejs.render(template, { basePath: _.kebabCase(moduleName) })
-
-      await fs.writeFile(controllerFilepath, renderedTemplate)
-
-      console.log(
-        `${chalk.green('✔')} Controller '${controllerFilename}' created in module '${moduleName}' successfully!`
-      )
     }
+
+    const templatePath = path.join(__dirname, '..', '..', 'lib', 'templates', 'controller.ejs')
+
+    const template = await fs.readFile(templatePath, 'utf-8')
+
+    const renderedTemplate = ejs.render(template, { basePath: _.kebabCase(moduleName) })
+
+    await fs.writeFile(controllerFilepath, renderedTemplate)
+
+    spinner.succeed(`Controller '${controllerFilename}' created in module '${moduleName}' successfully!`)
   }
 }

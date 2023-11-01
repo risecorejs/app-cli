@@ -1,6 +1,6 @@
+const ora = require('ora')
 const path = require('path')
 const fs = require('fs/promises')
-const chalk = require('chalk')
 
 const makeServiceCommand = require('./service')
 const makeControllerCommand = require('./controller')
@@ -24,6 +24,8 @@ module.exports = {
     return yargs
   },
   async handler({ name: moduleName, service, controller, model }) {
+    const spinner = ora('Generating module...').start()
+
     const modulesPath = path.resolve('modules')
     const modulePath = path.join(modulesPath, moduleName)
 
@@ -40,9 +42,9 @@ module.exports = {
     try {
       await fs.access(modulePath)
 
-      console.error(`${chalk.red('✖')} Module '${moduleName}' already exists!`)
+      spinner.fail(`Module '${moduleName}' already exists!`)
 
-      return
+      process.exit(1)
     } catch (err) {
       if (err.code !== 'ENOENT') {
         throw err
@@ -51,7 +53,7 @@ module.exports = {
 
     await fs.mkdir(modulePath)
 
-    console.log(`${chalk.green('✔')} Module '${moduleName}' created successfully!`)
+    spinner.succeed(`Module '${moduleName}' created successfully!`)
 
     if (service) {
       await makeServiceCommand.handler({
